@@ -1,20 +1,164 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Circadian target curve modeling with linear interpolation between discrete time-series setpoints.
+Circadian target curve modeling for Addison's disease management.
+
+Provides:
+- CircadianTargetGenerator: Dynamic 24-hour continuous mathematical target curve
+  anchored to the patient's customizable wake time (exponential morning surge,
+  gradual linear taper, flattening evening decay to sleep nadir).
+- CircadianCurveInterpolator: Piecewise linear interpolation across discrete setpoints.
 """
 
 from datetime import datetime, time, timedelta
+import math
 from typing import List, Tuple, Union
-import numpy as np
+
+
+class CircadianTargetGenerator:
+    """Generates continuous 24-hour physiological cortisol target curves
+    dynamically anchored to the patient's wake time.
+
+    Cortisol follows an asymmetric diurnal rhythm:
+    - [Wake - 3h, Wake]: Aggressive exponential ramp (Cortisol Awakening Response / Morning Surge).
+    - [Wake, Wake + 8h]: Gradual linear taper across active daytime hours.
+    - [Wake + 8h, Wake + 17h]: Flattening quadratic/asymptotic taper to nocturnal sleep baseline.
+    - [Wake + 17h, Wake - 3h]: Flat nocturnal sleep nadir baseline.
+    """
+
+    def __init__(
+        self,
+        wake_time: time = time(6, 0),
+        baseline_target: float = 40.0,
+        peak_target: float = 180.0,
+        afternoon_target: float = 90.0,
+        band_width: float = 40.0,
+        surge_exponent: float = 2.5,
+    ):
+        """
+        Arguments:
+            wake_time -- datetime.time representing patient's habitual wake time (default 06:00)
+            baseline_target -- Cortisol target at nocturnal sleep nadir in ng/mL (default 40.0)
+            peak_target -- Cortisol target at awakening peak in ng/mL (default 180.0)
+            afternoon_target -- Cortisol target at wake + 8h in ng/mL (default 90.0)
+            band_width -- Width of acceptable target band (min = target - band/2, max = target + band/2)
+            surge_exponent -- Exponential steepness factor k for morning surge ramp (default 2.5)
+        """
+        self.wake_time = wake_time
+        self.wake_minutes = wake_time.hour * 60 + wake_time.minute + wake_time.second / 60.0
+        self.baseline_target = float(baseline_target)
+        self.peak_target = float(peak_target)
+        self.afternoon_target = float(afternoon_target)
+        self.band_width = float(band_width)
+        self.half_band = self.band_width / 2.0
+        self.surge_exponent = float(surge_exponent)
+
+    def _relative_hours_from_wake(self, query_time: Union[time, datetime]) -> float:
+        """Calculates hours relative to wake time mapped into [-3.0, 21.0)."""
+        if isinstance(query_time, datetime):
+            q_time = query_time.time()
+        else:
+            q_time = query_time
+
+        q_mins = q_time.hour * 60.0 + q_time.minute + q_time.second / 60.0
+        rel_hours = ((q_mins - self.wake_minutes) / 60.0) % 24.0
+        if rel_hours >= 21.0:
+            rel_hours -= 24.0  # Maps the 3-hour pre-wake window into [-3.0, 0.0)
+        return rel_hours
+
+    def target_value_at(self, query_time: Union[time, datetime]) -> float:
+        """Evaluates the continuous physiological target cortisol value in ng/mL at query_time.
+
+        Phases relative to wake time (T_wake):
+        1. [T_wake - 3h, T_wake]: Aggressive exponential morning surge.
+        2. [T_wake, T_wake + 8h]: Gradual linear taper.
+        3. [T_wake + 8h, T_wake + 17h]: Flattening taper smoothly reaching baseline.
+        4. [T_wake + 17h, T_wake - 3h]: Stable sleep baseline.
+        """
+        rel_hours = self._relative_hours_from_wake(query_time)
+
+        # 1. [-3h, 0h]: Exponential Morning Surge (e.g. 3:00 AM - 6:00 AM)
+        if -3.0 <= rel_hours < 0.0:
+            u = (rel_hours + 3.0) / 3.0  # Normalized progress 0.0 -> 1.0
+            k = self.surge_exponent
+            exp_factor = (math.exp(k * u) - 1.0) / (math.exp(k) - 1.0)
+            return self.baseline_target + (self.peak_target - self.baseline_target) * exp_factor
+
+        # 2. [0h, 8h]: Gradual Linear Taper (e.g. 6:00 AM - 2:00 PM)
+        elif 0.0 <= rel_hours < 8.0:
+            u = rel_hours / 8.0  # 0.0 -> 1.0
+            return self.peak_target - u * (self.peak_target - self.afternoon_target)
+
+        # 3. [8h, 17h]: Flattening Taper to Baseline (e.g. 2:00 PM - 11:00 PM)
+        elif 8.0 <= rel_hours < 17.0:
+            u = (rel_hours - 8.0) / 9.0  # 0.0 -> 1.0
+            decay_factor = (1.0 - u) ** 2  # Smooth quadratic flattening (d/du = 0 at u=1)
+            return self.baseline_target + (self.afternoon_target - self.baseline_target) * decay_factor
+
+        # 4. [17h, 21h]: Nocturnal Sleep Baseline (e.g. 11:00 PM - 3:00 AM)
+        else:
+            return self.baseline_target
+
+    def target_at_time(self, query_time: Union[time, datetime]) -> Tuple[float, float]:
+        """Calculates (min_target, max_target) cortisol values in ng/mL at query_time.
+
+        Arguments:
+            query_time -- datetime.time or datetime.datetime object
+
+        Returns:
+            (min_target_ng_per_ml, max_target_ng_per_ml)
+        """
+        center = self.target_value_at(query_time)
+        min_target = max(0.0, center - self.half_band)
+        max_target = center + self.half_band
+        return (round(min_target, 2), round(max_target, 2))
+
+    def target_series(
+        self, start_time: datetime, end_time: datetime, interval_minutes: int = 5
+    ) -> Tuple[List[datetime], List[float], List[float]]:
+        """Generates time-series arrays of targets across a date range.
+
+        Returns:
+            (dates, min_targets, max_targets)
+        """
+        dates = []
+        min_targets = []
+        max_targets = []
+
+        curr = start_time
+        while curr <= end_time:
+            min_v, max_v = self.target_at_time(curr)
+            dates.append(curr)
+            min_targets.append(min_v)
+            max_targets.append(max_v)
+            curr += timedelta(minutes=interval_minutes)
+
+        return (dates, min_targets, max_targets)
+
+
+def generate_circadian_target_curve(
+    wake_time: time = time(6, 0),
+    baseline_target: float = 40.0,
+    peak_target: float = 180.0,
+    afternoon_target: float = 90.0,
+    band_width: float = 40.0,
+) -> CircadianTargetGenerator:
+    """Convenience factory function to create a 24-hour CircadianTargetGenerator."""
+    return CircadianTargetGenerator(
+        wake_time=wake_time,
+        baseline_target=baseline_target,
+        peak_target=peak_target,
+        afternoon_target=afternoon_target,
+        band_width=band_width,
+    )
 
 
 class CircadianCurveInterpolator:
     """Interpolates target cortisol values across a 24-hour cycle from discrete setpoints.
 
     Cortisol follows an asymmetric diurnal curve peaking sharply in early morning
-    (4:00 AM - 8:00 AM) and nadiring around midnight. Linear interpolation between
-    setpoints prevents step-change dosing artifacts.
+    and nadiring around midnight. Linear interpolation between setpoints prevents
+    step-change dosing artifacts when using discrete scheduling tables.
     """
 
     def __init__(

@@ -48,5 +48,18 @@ The following items represent areas where algorithmic confidence is currently it
 ---
 
 ## 3. Circadian Target Curve Specification
-* **Representation**: Discrete time-series setpoints with linear interpolation every minute.
-* **Rationale**: Avoids step-change dosing spikes while granting flexibility to shape the steep physiological morning cortisol awakening surge (CAR) and gentle evening slope.
+
+AdrenalLoopKit implements dynamic 24-hour target curve modeling through both continuous mathematical evaluation (`CircadianTargetGenerator`) and discrete setpoint linear interpolation (`CircadianCurveInterpolator`):
+
+### Continuous Mathematical Model (`CircadianTargetGenerator`)
+* **Wake-Time Parameterization**: Curves are anchored dynamically to the patient's habitual wake time ($T_{\text{wake}}$, default `06:00`), supporting custom schedules and shift-work adjustments.
+* **Diurnal Phases & Formulation**:
+  1. **Morning Awakening Surge ($[T_{\text{wake}} - 3\text{h}, T_{\text{wake}}]$)**: Aggressive exponential ramp modeling the physiological Cortisol Awakening Response (CAR) from nocturnal nadir baseline to morning peak:
+     $$C(u) = C_{\text{base}} + (C_{\text{peak}} - C_{\text{base}}) \cdot \frac{e^{k \cdot u} - 1}{e^k - 1}, \quad u = \frac{t_{\text{rel}} + 3}{3} \in [0, 1]$$
+  2. **Daytime Linear Taper ($[T_{\text{wake}}, T_{\text{wake}} + 8\text{h}]$)**: Gradual linear descent from morning peak down to mid-afternoon target:
+     $$C(u) = C_{\text{peak}} - u \cdot (C_{\text{peak}} - C_{\text{afternoon}}), \quad u = \frac{t_{\text{rel}}}{8} \in [0, 1]$$
+  3. **Evening Flattening Taper ($[T_{\text{wake}} + 8\text{h}, T_{\text{wake}} + 17\text{h}]$)**: Quadratic asymptotic decay smoothly flattening into nocturnal baseline ($\frac{dC}{du} = 0$ at $u=1$):
+     $$C(u) = C_{\text{base}} + (C_{\text{afternoon}} - C_{\text{base}}) \cdot (1 - u)^2, \quad u = \frac{t_{\text{rel}} - 8}{9} \in [0, 1]$$
+  4. **Nocturnal Sleep Baseline ($[T_{\text{wake}} + 17\text{h}, T_{\text{wake}} - 3\text{h}]$)**: Stable physiological nadir target ($C(t) = C_{\text{base}}$).
+* **System Clock Polling**: Exposes `target_value_at(time)` for continuous target evaluation and `target_at_time(time)` for symmetric safety band generation (`[min_target, max_target]`).
+

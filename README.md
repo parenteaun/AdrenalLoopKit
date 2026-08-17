@@ -13,7 +13,7 @@ Unlike Type 1 Diabetes closed-loop systems that deliver insulin to lower blood g
 - **Continuous Cortisol Biosensing**: Ingests real-time wearable sensor cortisol readings ($\text{ng/mL}$).
 - **Two-Compartment Pharmacokinetics**: Models subcutaneous depot absorption delay into plasma followed by systemic metabolic clearance, computing active **Hydrocortisone On Board (HOB)**.
 - **Positive Hormone Dynamics**: Infusions increase circulating cortisol ($Cortisol(t) = \text{Baseline} + \sum \text{Infusion} \times \text{Sensitivity} \times \text{Decay}(t)$).
-- **Circadian Target Curves**: 24-hour diurnal setpoints reflecting natural human cortisol rhythms (steep 4:00–8:00 AM awakening surge, gentle decline to midnight nadir) with minute-level interpolation.
+- **Circadian Target Curves**: 24-hour diurnal mathematical target curve generation anchored to the patient's customizable wake time (aggressive exponential awakening surge, gradual daytime linear taper, flattening evening decay, and sleep nadir baseline) with continuous polling.
 - **Dynamic Stress Load & Demand Modeling**: Quantifies physiological and illness stress disturbances that accelerate cortisol clearance, distinguishing acute physical/emotional stressors from prolonged systemic illness/infection.
 - **Safety Bounds & Guardrails**: Hard-coded software delivery limits (max basal rate, max acute bolus cap, sensor crisis thresholds) designed to prevent both life-threatening adrenal crises (under-replacement) and steroid toxicity (over-replacement).
 
@@ -23,7 +23,7 @@ Unlike Type 1 Diabetes closed-loop systems that deliver insulin to lower blood g
 
 - [`adrenalloopkit.domain_models`](adrenalloopkit/domain_models.py): Core typed domain classes (`CortisolValue`, `StressLoad`, `InfusionEntry`, `CircadianTargetCurve`, `HydrocortisoneSensitivity`, etc.) with legacy compatibility aliases.
 - [`adrenalloopkit.two_compartment_pk_model`](adrenalloopkit/two_compartment_pk_model.py): Subcutaneous-to-plasma 2-compartment pharmacokinetic decay curves.
-- [`adrenalloopkit.circadian_curve`](adrenalloopkit/circadian_curve.py): Diurnal circadian target curve interpolation.
+- [`adrenalloopkit.circadian_curve`](adrenalloopkit/circadian_curve.py): Continuous mathematical target curve generation (`CircadianTargetGenerator`) and discrete setpoint interpolation (`CircadianCurveInterpolator`).
 - [`adrenalloopkit.hydrocortisone_math`](adrenalloopkit/hydrocortisone_math.py): Active Hydrocortisone On Board (HOB) and predicted cortisol rise effects.
 - [`adrenalloopkit.stress_math`](adrenalloopkit/stress_math.py): Dynamic stress load absorption and depletion effects.
 - [`adrenalloopkit.infusion_math`](adrenalloopkit/infusion_math.py): Model-predictive dosing engine for recommended temporary basal rates, manual boluses, and autoboluses.

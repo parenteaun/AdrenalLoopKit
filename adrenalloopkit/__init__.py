@@ -19,7 +19,11 @@ from adrenalloopkit.domain_models import (
     TargetRange,
     InsulinSensitivityFactor,
 )
-from adrenalloopkit.circadian_curve import CircadianCurveInterpolator
+from adrenalloopkit.circadian_curve import (
+    CircadianTargetGenerator,
+    generate_circadian_target_curve,
+    CircadianCurveInterpolator,
+)
 from adrenalloopkit.two_compartment_pk_model import (
     HydrocortisoneTwoCompartmentModel,
     HydrocortisoneExponentialModel,

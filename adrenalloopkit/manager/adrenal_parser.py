@@ -7,8 +7,8 @@ AdrenalLoopKit data serialization and report parsing utilities.
 import json
 from datetime import datetime, time, timedelta
 
-from adrenalloopkit.infusion import InfusionType
-from adrenalloopkit.adrenal_data_manager import update
+from adrenalloopkit.models.domain_models import InfusionType
+from adrenalloopkit.manager.adrenal_data_manager import update
 
 
 def parse_adrenal_report_and_run(file_path):

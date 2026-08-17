@@ -37,9 +37,6 @@ class InfusionType(Enum):
         return cls.basal
 
 
-# Legacy DoseType alias
-DoseType = InfusionType
-
 
 @dataclass
 class CortisolValue:
@@ -158,11 +155,3 @@ class HydrocortisoneSensitivity:
         self.value = float(self.value)
 
 
-# Legacy Aliases
-GlucoseValue = CortisolValue
-CarbEntry = StressLoad
-DoseEntry = InfusionEntry
-InsulinOnBoard = HydrocortisoneOnBoard
-IOB = HOB
-TargetRange = CircadianTargetCurve
-InsulinSensitivityFactor = HydrocortisoneSensitivity

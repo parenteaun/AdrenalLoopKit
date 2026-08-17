@@ -7,7 +7,7 @@ Tests for AdrenalLoopKit domain models.
 from datetime import datetime, time
 import unittest
 
-from adrenalloopkit.domain_models import (
+from adrenalloopkit.models import (
     CortisolValue,
     StressLoad,
     InfusionEntry,

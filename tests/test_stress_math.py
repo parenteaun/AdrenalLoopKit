@@ -7,8 +7,11 @@ Tests for Stress Load Math and Dynamic Recovery Curves.
 from datetime import datetime, timedelta
 import unittest
 
-from adrenalloopkit.stress_status import dynamic_stress_demand_remaining
-from adrenalloopkit.stress_math import stress_effects, stress_load_on_board
+from adrenalloopkit.algorithms import (
+    dynamic_stress_demand_remaining,
+    stress_effects,
+    stress_load_on_board,
+)
 
 
 class TestStressMath(unittest.TestCase):

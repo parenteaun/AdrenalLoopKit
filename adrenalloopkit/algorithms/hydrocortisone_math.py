@@ -9,10 +9,10 @@ from datetime import datetime, timedelta, time
 import math
 import numpy as np
 
-from adrenalloopkit.infusion import InfusionType, DoseType
-from adrenalloopkit.infusion_entry import net_infusion_units, total_infusion_units, hours
-from adrenalloopkit.date import time_interval_since, date_floored_to_time_interval
-from adrenalloopkit.two_compartment_pk_model import (
+from adrenalloopkit.models.domain_models import InfusionType
+from adrenalloopkit.algorithms.infusion_entry import net_infusion_units, total_infusion_units, hours
+from adrenalloopkit.utils.date import time_interval_since, date_floored_to_time_interval
+from adrenalloopkit.algorithms.two_compartment_pk_model import (
     HydrocortisoneTwoCompartmentModel,
     HydrocortisoneExponentialModel,
 )
@@ -268,5 +268,3 @@ def annotated(infusion_types, starts, ends, values, delivered_units, basal_start
 # Aliases
 hydrocortisone_on_board_calc = hydrocortisone_on_board
 hob = hydrocortisone_on_board
-glucose_effects = cortisol_effects
-insulin_on_board = hydrocortisone_on_board

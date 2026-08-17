@@ -7,8 +7,8 @@ Tests for AdrenalDataManager update() orchestration.
 from datetime import datetime, timedelta, time
 import unittest
 
-from adrenalloopkit.infusion import InfusionType
-from adrenalloopkit.adrenal_data_manager import update
+from adrenalloopkit.models import InfusionType
+from adrenalloopkit.manager import update
 
 
 class TestAdrenalDataManager(unittest.TestCase):

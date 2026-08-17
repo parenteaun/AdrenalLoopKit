@@ -5,7 +5,7 @@ Synthetic 24-hour Addison's disease patient scenarios and clinical fixtures.
 """
 
 from datetime import datetime, time, timedelta
-from adrenalloopkit.infusion import InfusionType
+from adrenalloopkit.models.domain_models import InfusionType
 
 
 def generate_normal_24h_scenario(base_date=None):

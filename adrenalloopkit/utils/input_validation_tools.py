@@ -5,7 +5,7 @@ Input validation tools and clinical safety bounds for AdrenalLoopKit (Addison's 
 """
 
 import warnings
-from adrenalloopkit.infusion import InfusionType
+from adrenalloopkit.models.domain_models import InfusionType
 
 
 def are_settings_valid(settings):
@@ -107,13 +107,3 @@ def are_circadian_target_curves_valid(start_times, end_times, min_values, max_va
         warnings.warn("Warning: circadian target curve values outside physiological limits (10 - 350 ng/mL); continuing.")
 
     return True
-
-
-# Legacy aliases
-are_glucose_readings_valid = are_cortisol_readings_valid
-are_carb_readings_valid = are_stress_readings_valid
-are_insulin_doses_valid = are_infusion_entries_valid
-is_insulin_sensitivity_schedule_valid = is_hydrocortisone_sensitivity_schedule_valid
-are_correction_ranges_valid = are_circadian_target_curves_valid
-are_basal_rates_valid = lambda start_times, rates, minutes_active: True
-are_carb_ratios_valid = lambda dates, ratios: True

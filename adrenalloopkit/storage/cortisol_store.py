@@ -5,7 +5,7 @@ Cortisol data filtering and momentum caching storage for AdrenalLoopKit.
 """
 
 from datetime import datetime, timedelta
-from adrenalloopkit.cortisol_math import linear_momentum_effect, counteraction_effects
+from adrenalloopkit.algorithms.cortisol_math import linear_momentum_effect, counteraction_effects
 
 
 def get_recent_momentum_effects(cortisol_dates, cortisol_values, momentum_data_interval=15):

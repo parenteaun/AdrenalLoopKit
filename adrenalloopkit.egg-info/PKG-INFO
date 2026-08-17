@@ -26,40 +26,89 @@ Dynamic: requires-dist
 Dynamic: requires-python
 Dynamic: summary
 
-# AdrenalLoopKit (PyLoopKit Fork)
-A set of Python tools for closed-loop hormone delivery, refactored for **AdrenalLoop (Addison's Disease)** management from PyLoopKit.
+# AdrenalLoopKit
 
-## Domain Migration Mapping
+**AdrenalLoopKit** is a Python library implementing closed-loop automated hormone delivery algorithms for the management of **Primary and Secondary Adrenal Insufficiency (Addison's Disease)**, refactored and adapted from the PyLoopKit model-predictive controller architecture.
 
-| PyLoopKit (Diabetes) | AdrenalLoop (Addison's) | Data Type Expected | Description |
-| :--- | :--- | :--- | :--- |
-| `GlucoseValue` | `CortisolValue` | Float (`ng/mL`) | Continuous wearable biosensor cortisol readings |
-| `CarbEntry` | `StressLoad` | Integer | Wearable-derived stress load metric |
-| `DoseEntry` (Insulin) | `InfusionEntry` (Hydrocortisone) | Float (`mcg`) | Hydrocortisone infusion rate/bolus delivery |
-| `InsulinOnBoard` (`IOB`) | `HydrocortisoneOnBoard` (`HOB`) | Float | Decay tracking float of active hydrocortisone |
-| `TargetRange` | `CircadianTargetCurve` | Time-series array | 24-hour variable circadian target cortisol curve |
-| `InsulinSensitivityFactor` | `HydrocortisoneSensitivity` | Multiplier | Multiplier: Effect of 1mg HC on blood cortisol |
+---
 
-# Usage & Requirements
-Please review [the documentation](pyloopkit/docs/pyloopkit_documentation.md) for usage instructions, input data requirements, and algorithm details.
+## Overview & Purpose
 
+Unlike Type 1 Diabetes closed-loop systems that deliver insulin to lower blood glucose, AdrenalLoopKit controls **subcutaneous hydrocortisone (HC) infusions** to maintain physiological **blood cortisol concentrations** across dynamic daily demands.
 
-### To recreate the Virtual Environment
-1. This environment was developed with Anaconda. You'll need to install [Miniconda](https://conda.io/miniconda.html) or [Anaconda](https://anaconda-installer.readthedocs.io/en/latest/) for your platform.
-2. In a terminal, navigate to the directory where the environment.yml 
-is located (likely in PyLoopKit/pyloopkit folder).
-3. Run `conda env create`; this will download all of the package dependencies
-and install them in a virtual environment named py-loop. PLEASE NOTE: this
-may take up to 30 minutes to complete.
+### Key Architectural & Physiological Features
 
-### To use the Virtual Environment
-In Bash run `source activate py-loop`, or in the Anaconda Prompt
-run `conda activate py-loop` to start the environment.
+- **Continuous Cortisol Biosensing**: Ingests real-time wearable sensor cortisol readings ($\text{ng/mL}$).
+- **Two-Compartment Pharmacokinetics**: Models subcutaneous depot absorption delay into plasma followed by systemic metabolic clearance, computing active **Hydrocortisone On Board (HOB)**.
+- **Positive Hormone Dynamics**: Infusions increase circulating cortisol ($Cortisol(t) = \text{Baseline} + \sum \text{Infusion} \times \text{Sensitivity} \times \text{Decay}(t)$).
+- **Circadian Target Curves**: 24-hour diurnal mathematical target curve generation anchored to the patient's customizable wake time (aggressive exponential awakening surge, gradual daytime linear taper, flattening evening decay, and sleep nadir baseline) with continuous polling.
+- **Dynamic Stress Load & Demand Modeling**: Quantifies physiological and illness stress disturbances that accelerate cortisol clearance, distinguishing acute physical/emotional stressors from prolonged systemic illness/infection.
+- **Safety Bounds & Guardrails**: Hard-coded software delivery limits (max basal rate, max acute bolus cap, sensor crisis thresholds) designed to prevent both life-threatening adrenal crises (under-replacement) and steroid toxicity (over-replacement).
 
-Run `deactivate` to stop the environment.
+---
 
-### To create the PyLoopKit package
-If you want to install a version of the PyLoopKit package based on the PyLoopKit on your local machine, run `python3 setup.py install` within your PyLoopKit repo to call the setup script and install the package. You'll likely want to do this within the `py-loop` environment.
+## Package Architecture & Core Modules
 
-### Running the unittests
-To run PyLoopKit's unit tests, run `python3 -m unittest discover` within your PyLoopKit repo
+- [`adrenalloopkit.domain_models`](adrenalloopkit/domain_models.py): Core typed domain classes (`CortisolValue`, `StressLoad`, `InfusionEntry`, `CircadianTargetCurve`, `HydrocortisoneSensitivity`, etc.) with legacy compatibility aliases.
+- [`adrenalloopkit.two_compartment_pk_model`](adrenalloopkit/two_compartment_pk_model.py): Subcutaneous-to-plasma 2-compartment pharmacokinetic decay curves.
+- [`adrenalloopkit.circadian_curve`](adrenalloopkit/circadian_curve.py): Continuous mathematical target curve generation (`CircadianTargetGenerator`) and discrete setpoint interpolation (`CircadianCurveInterpolator`).
+- [`adrenalloopkit.hydrocortisone_math`](adrenalloopkit/hydrocortisone_math.py): Active Hydrocortisone On Board (HOB) and predicted cortisol rise effects.
+- [`adrenalloopkit.stress_math`](adrenalloopkit/stress_math.py): Dynamic stress load absorption and depletion effects.
+- [`adrenalloopkit.infusion_math`](adrenalloopkit/infusion_math.py): Model-predictive dosing engine for recommended temporary basal rates, manual boluses, and autoboluses.
+- [`adrenalloopkit.adrenal_data_manager`](adrenalloopkit/adrenal_data_manager.py): Main orchestration pipeline for running algorithm loop updates.
+
+---
+
+## Installation & Environment Setup
+
+AdrenalLoopKit requires **Python 3.7+**.
+
+### 1. Create a Virtual Environment (`venv`)
+
+From the root directory of the repository:
+
+```bash
+python3 -m venv venv
+```
+
+### 2. Activate the Virtual Environment
+
+- **Linux / macOS:**
+  ```bash
+  source venv/bin/activate
+  ```
+
+- **Windows (Command Prompt / PowerShell):**
+  ```cmd
+  venv\Scripts\activate
+  ```
+
+### 3. Install AdrenalLoopKit & Dependencies
+
+Install the package in editable mode for local development:
+
+```bash
+pip install --upgrade pip
+pip install -e .
+```
+
+To deactivate the virtual environment when finished:
+```bash
+deactivate
+```
+
+---
+
+## Running Unit Tests
+
+With the virtual environment activated, run the test suite using Python's built-in `unittest` runner:
+
+```bash
+python3 -m unittest discover tests
+```
+
+---
+
+## Clinical & Architectural Notes
+
+For detailed documentation on pharmacokinetic modeling choices, stress recovery equations, clinical uncertainty logs, and safety bounds, refer to [`MIGRATION_README.md`](MIGRATION_README.md).

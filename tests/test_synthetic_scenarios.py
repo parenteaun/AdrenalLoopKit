@@ -11,7 +11,7 @@ from tests.fixtures.AdrenalLoop.synthetic_patients import (
     generate_illness_infection_scenario,
     generate_near_crisis_scenario,
 )
-from adrenalloopkit.adrenal_data_manager import update
+from adrenalloopkit.manager import update
 
 
 class TestSyntheticAddisonScenarios(unittest.TestCase):

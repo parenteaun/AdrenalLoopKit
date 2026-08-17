@@ -7,7 +7,7 @@ Tests for Cortisol Math, Linear Momentum, and Counteraction Effects.
 from datetime import datetime, timedelta
 import unittest
 
-from adrenalloopkit.cortisol_math import linear_momentum_effect, counteraction_effects
+from adrenalloopkit.algorithms.cortisol_math import linear_momentum_effect, counteraction_effects
 
 
 class TestCortisolMath(unittest.TestCase):

@@ -5,7 +5,7 @@ Stress event storage, filtering, and timeline querying for AdrenalLoopKit.
 """
 
 from datetime import datetime, timedelta
-from adrenalloopkit.stress_math import stress_effects, stress_load_on_board
+from adrenalloopkit.algorithms.stress_math import stress_effects, stress_load_on_board
 
 
 def get_stress_effects(
@@ -40,8 +40,3 @@ def get_stress_load_on_board(
         stress_absorption_times,
         query_time=query_time,
     )
-
-
-# Legacy aliases
-get_carb_glucose_effects = get_stress_effects
-get_carbs_on_board = get_stress_load_on_board

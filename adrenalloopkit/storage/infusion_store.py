@@ -4,7 +4,7 @@
 Hydrocortisone infusion history storage and effect caching for AdrenalLoopKit.
 """
 
-from adrenalloopkit.hydrocortisone_math import (
+from adrenalloopkit.algorithms.hydrocortisone_math import (
     hydrocortisone_on_board,
     cortisol_effects,
     reconciled,
@@ -46,6 +46,3 @@ def get_cortisol_effects(
         delta=delta,
     )
 
-
-# Legacy alias
-get_glucose_effects = get_cortisol_effects

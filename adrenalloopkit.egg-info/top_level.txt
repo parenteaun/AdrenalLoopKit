@@ -1,3 +1,2 @@
 adrenalloopkit
-pyloopkit
 tests

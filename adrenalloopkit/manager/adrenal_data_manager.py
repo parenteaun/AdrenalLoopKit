@@ -7,7 +7,7 @@ Main AdrenalLoopKit Data Manager and closed-loop algorithm orchestrator.
 from datetime import datetime, timedelta, time
 import warnings
 
-from adrenalloopkit.domain_models import (
+from adrenalloopkit.models.domain_models import (
     CortisolValue,
     StressLoad,
     InfusionEntry,
@@ -17,23 +17,23 @@ from adrenalloopkit.domain_models import (
     CircadianTargetCurve,
     HydrocortisoneSensitivity,
 )
-from adrenalloopkit.circadian_curve import CircadianCurveInterpolator
-from adrenalloopkit.hydrocortisone_math import (
+from adrenalloopkit.algorithms.circadian_curve import CircadianCurveInterpolator
+from adrenalloopkit.algorithms.hydrocortisone_math import (
     hydrocortisone_on_board,
     cortisol_effects,
     reconciled,
     annotated,
     find_ratio_at_time,
 )
-from adrenalloopkit.cortisol_store import get_recent_momentum_effects, get_counteraction_effects
-from adrenalloopkit.stress_store import get_stress_effects, get_stress_load_on_board
-from adrenalloopkit.infusion_math import (
+from adrenalloopkit.storage.cortisol_store import get_recent_momentum_effects, get_counteraction_effects
+from adrenalloopkit.storage.stress_store import get_stress_effects, get_stress_load_on_board
+from adrenalloopkit.algorithms.infusion_math import (
     recommended_temp_basal,
     recommended_bolus,
     recommended_autobolus,
 )
-from adrenalloopkit.adrenal_loop_math import predict_cortisol, decay_effect
-from adrenalloopkit.input_validation_tools import (
+from adrenalloopkit.algorithms.adrenal_loop_math import predict_cortisol, decay_effect
+from adrenalloopkit.utils.input_validation_tools import (
     are_settings_valid,
     are_cortisol_readings_valid,
     are_stress_readings_valid,
@@ -246,14 +246,6 @@ def update(input_dict):
         "current_target_min": current_target_min,
         "current_target_max": current_target_max,
         "input_data": input_dict,
-        # Legacy compatibility keys
-        "predicted_glucose_dates": pred_dates,
-        "predicted_glucose_values": pred_values,
-        "insulin_effect_dates": hc_dates,
-        "insulin_effect_values": hc_values,
-        "carb_effect_dates": stress_dates_out,
-        "carb_effect_values": stress_values_out,
-        "carbs_on_board": current_sob,
     }
 
     return results

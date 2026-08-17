@@ -7,8 +7,8 @@ Stress demand math, stress depletion modeling, and stress-on-board calculations.
 from datetime import datetime, timedelta
 import numpy as np
 
-from adrenalloopkit.date import time_interval_since, date_floored_to_time_interval
-from adrenalloopkit.stress_status import dynamic_stress_demand_remaining
+from adrenalloopkit.utils.date import time_interval_since, date_floored_to_time_interval
+from adrenalloopkit.algorithms.stress_status import dynamic_stress_demand_remaining
 
 
 def stress_effects(
@@ -115,8 +115,3 @@ def stress_load_on_board(
 
     return total_active_stress
 
-
-# Legacy aliases
-carb_glucose_effects = stress_effects
-dynamic_glucose_effects = stress_effects
-get_carbs_on_board = stress_load_on_board

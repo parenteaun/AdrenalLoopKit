@@ -7,8 +7,8 @@ Tests for Hydrocortisone Math, HOB tracking, and Cortisol Elevation Effects.
 from datetime import datetime, timedelta, time
 import unittest
 
-from adrenalloopkit.infusion import InfusionType
-from adrenalloopkit.hydrocortisone_math import (
+from adrenalloopkit.models import InfusionType
+from adrenalloopkit.algorithms import (
     hydrocortisone_on_board,
     cortisol_effects,
     reconciled,

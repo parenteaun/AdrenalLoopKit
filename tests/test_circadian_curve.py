@@ -9,7 +9,7 @@ from datetime import datetime, time, timedelta
 import math
 import unittest
 
-from adrenalloopkit.circadian_curve import (
+from adrenalloopkit.algorithms import (
     CircadianTargetGenerator,
     generate_circadian_target_curve,
     CircadianCurveInterpolator,

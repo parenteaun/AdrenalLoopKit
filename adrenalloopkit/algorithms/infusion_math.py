@@ -9,7 +9,7 @@ from datetime import datetime, timedelta, time
 import numpy as np
 from enum import Enum
 
-from adrenalloopkit.infusion import InfusionType
+from adrenalloopkit.models.domain_models import InfusionType
 
 
 class Correction(Enum):

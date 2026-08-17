@@ -19,11 +19,6 @@ def predict_cortisol(
     stress_effect_values=None,
     correction_effect_dates=None,
     correction_effect_values=None,
-    # Legacy aliases
-    insulin_effect_dates=None,
-    insulin_effect_values=None,
-    carb_effect_dates=None,
-    carb_effect_values=None,
 ):
     """Predicts future blood cortisol concentrations (in ng/mL) by summing:
     - Baseline starting cortisol
@@ -32,13 +27,6 @@ def predict_cortisol(
     - Biometric stress depletion / demand effect (-)
     - Retrospective discrepancy correction
     """
-    if hydrocortisone_effect_dates is None and insulin_effect_dates is not None:
-        hydrocortisone_effect_dates = insulin_effect_dates
-        hydrocortisone_effect_values = insulin_effect_values
-
-    if stress_effect_dates is None and carb_effect_dates is not None:
-        stress_effect_dates = carb_effect_dates
-        stress_effect_values = carb_effect_values
 
     # Determine unified forecast timeline
     all_dates = []
@@ -121,7 +109,3 @@ def subtracting(dates1, values1, dates2, values2):
             out_vals.append(v - val2_map[d])
     return (out_dates, out_vals)
 
-
-# Legacy aliases
-predict_glucose = predict_cortisol
-sort_dose_lists = lambda t, s, e, v: (t, s, e, v)

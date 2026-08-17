@@ -5,7 +5,7 @@ Tests for Two-Compartment and Exponential PK models for hydrocortisone.
 """
 
 import unittest
-from adrenalloopkit.two_compartment_pk_model import (
+from adrenalloopkit.algorithms import (
     HydrocortisoneTwoCompartmentModel,
     HydrocortisoneExponentialModel,
 )

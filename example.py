@@ -6,7 +6,7 @@ with a 24-hour synthetic patient scenario.
 """
 
 from datetime import datetime, timedelta
-from adrenalloopkit.adrenal_data_manager import update
+from adrenalloopkit import update
 from tests.fixtures.AdrenalLoop.synthetic_patients import (
     generate_normal_24h_scenario,
     generate_acute_stress_scenario,

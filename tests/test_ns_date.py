@@ -10,7 +10,7 @@ import unittest
 from datetime import datetime, timedelta
 
 #from . import path_grabber  # pylint: disable=unused-import
-from adrenalloopkit.date import (
+from adrenalloopkit.utils.date import (
     date_floored_to_time_interval,
     date_ceiled_to_time_interval,
     time_interval_since_reference_date,

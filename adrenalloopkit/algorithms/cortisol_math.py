@@ -7,7 +7,7 @@ Cortisol rate of change, momentum effects, and counteraction effects for Adrenal
 from datetime import datetime, timedelta
 import numpy as np
 
-from adrenalloopkit.date import time_interval_since, date_floored_to_time_interval
+from adrenalloopkit.utils.date import time_interval_since, date_floored_to_time_interval
 
 
 def linear_momentum_effect(dates, values, duration_minutes=15, delta=5):
@@ -93,6 +93,3 @@ def counteraction_effects(
 
     return (starts, ends, effects)
 
-
-# Legacy aliases
-get_recent_momentum_effects = linear_momentum_effect

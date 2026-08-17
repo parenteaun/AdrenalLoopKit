@@ -7,7 +7,7 @@ Tests for Hydrocortisone Infusion Math, Temp Basals, and Acute Stress Boluses.
 from datetime import datetime, timedelta
 import unittest
 
-from adrenalloopkit.infusion_math import (
+from adrenalloopkit.algorithms import (
     recommended_temp_basal,
     recommended_bolus,
     recommended_autobolus,

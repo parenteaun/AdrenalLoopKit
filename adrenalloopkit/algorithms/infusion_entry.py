@@ -3,9 +3,8 @@
 """
 Hydrocortisone infusion entry math and net delivery calculations in milligrams (mg).
 """
-from adrenalloopkit.date import time_interval_since
-from adrenalloopkit.infusion import InfusionType, DoseType
-from adrenalloopkit.domain_models import InfusionEntry, DoseEntry
+from adrenalloopkit.utils.date import time_interval_since
+from adrenalloopkit.models.domain_models import InfusionType, InfusionEntry
 
 
 def net_infusion_units(type_, value, start, end, scheduled_basal_rate, delivered_units):
@@ -63,6 +62,5 @@ def hours(start_date, end_date):
     return abs(time_interval_since(end_date, start_date)) / 3600.0
 
 
-# Legacy and domain aliases
-net_basal_units = net_infusion_units
+# Domain aliases
 total_infusion_units = total_units_given

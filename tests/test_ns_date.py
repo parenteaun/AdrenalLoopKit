@@ -10,8 +10,13 @@ import unittest
 from datetime import datetime, timedelta
 
 #from . import path_grabber  # pylint: disable=unused-import
-from pyloopkit.date import (date_floored_to_time_interval, date_ceiled_to_time_interval,
-                  time_interval_since_reference_date, time_interval_since)
+from adrenalloopkit.utils.date import (
+    date_floored_to_time_interval,
+    date_ceiled_to_time_interval,
+    time_interval_since_reference_date,
+    time_interval_since,
+)
+
 
 REF_DATE = datetime(2001, 1, 1, 0, 0, 0)
 

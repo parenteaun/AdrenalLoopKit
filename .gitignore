@@ -4,7 +4,8 @@
 build
 dist 
 pyloopkit.egg-info
-
+.venv/*
+.agents/*
 *output.html
 
 *-output.json

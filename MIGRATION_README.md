@@ -8,17 +8,16 @@ This document serves as a living log of architectural decisions, physiological m
 
 AdrenalLoopKit is a closed-loop automated hormone delivery algorithm designed specifically for the management of **Primary and Secondary Adrenal Insufficiency (Addison's Disease)**, refactored from the PyLoopKit model-predictive controller architecture.
 
-### Conceptual Mapping
+### Domain & Code Migration Mapping
 
-| Diabetes Concept | Addison's Disease Concept | Biological Mechanism in AdrenalLoop |
-| :--- | :--- | :--- |
-| **Glucose** ($\text{mg/dL}$) | **Cortisol** ($\text{ng/mL}$) | Target controlled variable measured via continuous wearable sensor ($10\text{ ng/mL} = 1\ \mu\text{g/dL}$). |
-| **Insulin** ($\text{U}$) | **Hydrocortisone** ($\text{mg}$) | Hormone replacement delivered continuously via subcutaneous infusion pump ($1\text{ mg} = 1000\ \mu\text{g}$). |
-| **Hormone Effect** (Negative) | **Hormone Effect** (Positive) | Hydrocortisone **elevates** blood cortisol concentration ($Cortisol(t) = Baseline + \sum Infusion \times Sens \times Decay(t)$). |
-| **Carbohydrates** ($\text{g}$) | **Stress Load** (Index) | Active disturbance causing increased physiological demand / rapid cortisol depletion. |
-| **Carb Absorption** | **Stress Demand / Recovery** | Acute stress (rapid spike, exponential recovery) vs. illness/infection (sustained prolonged demand). |
-| **Flat Target Range** | **Circadian Target Curve** | Asymmetric 24-hour diurnal rhythm (early morning awakening spike 4:00–8:00 AM, gradual decline to midnight nadir). |
-| **IOB** (Insulin on Board) | **HOB** (Hydrocortisone on Board) | Active circulating / remaining hydrocortisone tracking across the 2-compartment decay timeline. |
+| PyLoopKit (Diabetes) | AdrenalLoopKit (Addison's) | Units / Representation | Physiological Mechanism & Implementation |
+| :--- | :--- | :--- | :--- |
+| `GlucoseValue` | `CortisolValue` | Float ($\text{ng/mL}$) | Continuous wearable biosensor cortisol readings ($10\text{ ng/mL} = 1\ \mu\text{g/dL}$). |
+| `CarbEntry` | `StressLoad` | Integer / Index | Active disturbance causing increased physiological demand / rapid cortisol depletion. |
+| `DoseEntry` (Insulin) | `InfusionEntry` (HC) | Float ($\text{mg}$ / $\mu\text{g}$) | Hormone replacement delivered continuously via subcutaneous infusion pump ($1\text{ mg} = 1000\ \mu\text{g}$). |
+| `InsulinOnBoard` (`IOB`) | `HydrocortisoneOnBoard` (`HOB`) | Float ($\text{mg}$) | Active circulating / remaining hydrocortisone tracking across the 2-compartment decay timeline. |
+| `TargetRange` | `CircadianTargetCurve` | Time-series array | Asymmetric 24-hour diurnal rhythm (early morning awakening spike 4:00–8:00 AM, gradual decline to midnight nadir). |
+| `InsulinSensitivityFactor` | `HydrocortisoneSensitivity` | Multiplier ($\text{ng/mL}$ per $\text{mg}$) | Expected rise in blood cortisol concentration per $1\text{ mg}$ hydrocortisone ($Cortisol(t) = \text{Baseline} + \sum \text{Infusion} \times \text{Sens} \times \text{Decay}(t)$). |
 
 ---
 

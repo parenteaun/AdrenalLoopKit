@@ -1,3 +1,31 @@
+Metadata-Version: 2.4
+Name: adrenalloopkit
+Version: 0.2.0
+Summary: Python implementation of the AdrenalLoop algorithm for Addison's Disease management
+Author: AdrenalLoopKit Contributors
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Healthcare Industry
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy>=1.22.0
+Requires-Dist: backports-datetime-fromisoformat>=1.0.0
+Dynamic: author
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
 # AdrenalLoopKit (PyLoopKit Fork)
 A set of Python tools for closed-loop hormone delivery, refactored for **AdrenalLoop (Addison's Disease)** management from PyLoopKit.
 
